@@ -63,7 +63,7 @@ export default function BarsChart({ value, detailed = false }: BarsChartsProp) {
           <ChartsBar detailed={detailed} item={item} id={id}></ChartsBar>
           {detailed && (
             <InfoContainer>
-              <SvgIcon type=""></SvgIcon>
+              {/* <SvgIcon color={LIGHT_GRAY} type=""></SvgIcon> */}
               <InfoText>epaules</InfoText>
             </InfoContainer>
           )}
