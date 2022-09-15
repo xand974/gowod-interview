@@ -7,6 +7,8 @@ import SimpleButton from "components/Buttons/SimpleButton";
 import { useNavigation } from "@react-navigation/native";
 import { AppNavigationProp } from "types";
 import { DEFAULT_IMG } from "../../../mock/data";
+import { useAppSelector } from "../../../hooks/app.hooks";
+import { useState, useEffect } from "react";
 
 const BackgroundImage = styled.Image`
   height: 100%;
@@ -50,12 +52,20 @@ const ButtonWrapper = styled.View`
 
 export default function GetStartedScreen() {
   const navigation = useNavigation<AppNavigationProp>();
+  const { tests } = useAppSelector((state) => state.mobiTests);
+  const [isFirstTest, setIsFirstTest] = useState(false);
+
   const startTest = () => {
     navigation.navigate("TestScreen");
   };
   const goBack = () => {
     navigation.navigate("OverviewScreen");
   };
+
+  useEffect(() => {
+    setIsFirstTest(tests.length === 0 ? true : false);
+  }, []);
+
   return (
     <>
       <BackgroundImage
@@ -97,11 +107,13 @@ export default function GetStartedScreen() {
               bg={MID_BLUE}
               text="C'est parti !"
             ></SimpleButton>
-            <SimpleButton
-              onPress={goBack}
-              bg="transparent"
-              text="pas maintenant"
-            ></SimpleButton>
+            {!isFirstTest && (
+              <SimpleButton
+                onPress={goBack}
+                bg="transparent"
+                text="pas maintenant"
+              ></SimpleButton>
+            )}
           </ButtonWrapper>
         </Wrapper>
       </SafeContainer>

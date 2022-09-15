@@ -19,7 +19,7 @@
     "cors": "^2.8.5",
     "dotenv": "^10.0.0",
     "express": "^4.17.1",
-    "gowod_interview_types": "^1.0.0",
+    "gowod_interview_types": "^2.0.0",
     "graphql": "^16.6.0",
     "helmet": "^4.6.0",
     "jsonwebtoken": "^8.5.1",

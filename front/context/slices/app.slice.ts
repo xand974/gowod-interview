@@ -1,7 +1,12 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-const initialState = {
+interface AppState {
+  loading: boolean;
+  deviceId: string;
+}
+const initialState: AppState = {
   loading: false,
+  deviceId: "",
 };
 
 export const appSlice = createSlice({
@@ -14,8 +19,15 @@ export const appSlice = createSlice({
         loading: action.payload,
       };
     },
+
+    SET_DEVICE_ID: (state, action: PayloadAction<string>) => {
+      return {
+        ...state,
+        deviceId: action.payload,
+      };
+    },
   },
 });
 
 export default appSlice.reducer;
-export const { SET_LOADING } = appSlice.actions;
+export const { SET_LOADING, SET_DEVICE_ID } = appSlice.actions;

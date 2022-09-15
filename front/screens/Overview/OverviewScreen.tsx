@@ -37,9 +37,6 @@ export default function OverviewScreen() {
           <MidSizeCard>
             <Card />
           </MidSizeCard>
-          <MidSizeCard>
-            <Card />
-          </MidSizeCard>
         </CardsContainer>
       </ScrollContainer>
     </MainLayout>

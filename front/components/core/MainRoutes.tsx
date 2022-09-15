@@ -1,17 +1,20 @@
 import { StyleSheet, KeyboardAvoidingView, Platform } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
-import {
-  CardStyleInterpolators,
-  createStackNavigator,
-  TransitionPresets,
-} from "@react-navigation/stack";
-import DashboardScreen from "screens/Dashboard/DashboardScreen";
-import MobiTestScreen from "screens/MobiTest/MobiTestScreen";
-import MobiScoreScreen from "screens/MobiScore/MobiScoreScreen";
-import LoadingScreen from "screens/Loading/LoadingScreen";
+import { useEffect } from "react";
+import { SET_DEVICE_ID } from "../../context/slices/app.slice";
+import { useDispatch } from "react-redux";
+import { useAppSelector } from "../../hooks/app.hooks";
+import Stacks from "components/core/Stacks";
 
 export default function MainRoutes() {
-  const Stack = createStackNavigator();
+  const dispatch = useDispatch();
+  const { deviceId } = useAppSelector((state) => state.app);
+
+  useEffect(() => {
+    if (deviceId.length > 0) return;
+    const id = new Date().getTime().toString(36);
+    dispatch(SET_DEVICE_ID(id));
+  }, [deviceId]);
 
   return (
     <NavigationContainer>
@@ -19,24 +22,7 @@ export default function MainRoutes() {
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={styles.container}
       >
-        <Stack.Navigator>
-          <Stack.Group>
-            <Stack.Screen name="DashboardScreen" component={DashboardScreen} />
-            <Stack.Screen
-              options={{ headerShown: false }}
-              name="MobiTestScreen"
-              component={MobiTestScreen}
-            />
-            <Stack.Screen
-              name="MobiScoreScreen"
-              options={{
-                ...TransitionPresets.ModalSlideFromBottomIOS,
-              }}
-              component={MobiScoreScreen}
-            />
-            <Stack.Screen name="LoadingScreen" component={LoadingScreen} />
-          </Stack.Group>
-        </Stack.Navigator>
+        <Stacks />
       </KeyboardAvoidingView>
     </NavigationContainer>
   );

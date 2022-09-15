@@ -112,6 +112,7 @@ const TestSelectedContainer = styled.View`
   border-radius: 10px;
   align-items: center;
 `;
+
 const SmallBoldText = styled.Text`
   font-weight: bold;
   background: #000;
