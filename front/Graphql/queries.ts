@@ -21,11 +21,15 @@ export const GET_ALL_TESTS = gql`
   query GetTests {
     getTests {
       _id
+      createdAt
       deviceId
       totalPoints
       body {
-        ankles
+        shoulders
+        postchain
+        overhead
         hips
+        ankles
       }
     }
   }

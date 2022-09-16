@@ -8,8 +8,12 @@ import { WHITE } from "assets/styles/@core.style";
 import { DEFAULT_IMG, MOBI_TEST } from "mock/data";
 import ProgressBar from "components/UI/ProgressBar";
 import Avatar from "components/UI/Avatar";
-import { MobiTestModel } from "types";
+import { QuestionnaireModel } from "types";
+import { MobiTestModel } from "gowod_interview_types";
 import { AppNavigationProp } from "types";
+import { useDispatch } from "react-redux";
+import { SET_CURRENT_TEST } from "context/slices/mobi-test.slice";
+import { useAppSelector } from "../../../hooks/app.hooks";
 
 const Container = styled.View`
   width: 90%;
@@ -57,9 +61,13 @@ export default function TestScreen() {
     [] as { points: number; archetype: string }[]
   );
   const [total, setTotal] = useState(0);
-  const [currentQuestion, setCurrentQuestion] = useState({} as MobiTestModel);
+  const [currentQuestion, setCurrentQuestion] = useState(
+    {} as QuestionnaireModel
+  );
   const questions = useMemo(() => [...MOBI_TEST], []);
   const navigation = useNavigation<AppNavigationProp>();
+  const { deviceId } = useAppSelector((state) => state.app);
+  const dispatch = useDispatch();
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -68,17 +76,33 @@ export default function TestScreen() {
   }, []);
 
   const goBack = () => {
+    // TODO move these to context
     setCurrentStepNumber((prev) => {
       if (prev === 0) {
-        navigation.navigate("OverviewScreen");
-        return 0;
+        prev = 0;
+        navigation.navigate("DashboardScreen");
+        return prev;
       }
-
       return prev - 1;
+    });
+
+    // TODO refactor this
+    setAnswer((prev) => {
+      const answerWithoutLastElementRemoved = prev.filter(
+        (_, id) => id !== prev.length - 1
+      );
+
+      setTotal((curr) => {
+        const lastElement = prev[prev.length - 1];
+        return curr - lastElement.points;
+      });
+
+      return answerWithoutLastElementRemoved;
     });
   };
 
   const goNextStep = (data: { points: number; archetype: string }) => {
+    // TODO move these to context
     setAnswer((prev) => [...prev, { ...data }]);
     setTotal((prev) => prev + data.points);
     setCurrentStepNumber((prev) => prev + 1);
@@ -86,14 +110,38 @@ export default function TestScreen() {
 
   useEffect(() => {
     if (currentStepNumber === questions.length) {
-      navigation.navigate("LoadingScreen");
-      // TODO handle answers + total
-      console.log(answer, total);
+      const mobiTest = {
+        deviceId,
+        totalPoints: total,
+        body: {
+          ankles: getTotalPointByArchetype("ankles"),
+          hips: getTotalPointByArchetype("hips"),
+          overhead: getTotalPointByArchetype("overhead"),
+          postchain: getTotalPointByArchetype("postchain"),
+          shoulders: getTotalPointByArchetype("shoulders"),
+        },
+      } as MobiTestModel;
 
+      // TODO move these to context
+      dispatch(SET_CURRENT_TEST({ ...mobiTest }));
+      setCurrentStepNumber(0);
+      setTotal(0);
+      setAnswer([]);
+
+      navigation.navigate("LoadingScreen");
       return;
     }
     setCurrentQuestion(questions[currentStepNumber]);
   }, [currentStepNumber]);
+
+  const getTotalPointByArchetype = (key: string) => {
+    return answer.reduce((prev, curr) => {
+      if (curr.archetype === key) {
+        return prev + curr.points;
+      }
+      return prev;
+    }, 0);
+  };
 
   return (
     <MainLayout>

@@ -59,12 +59,14 @@ export default function GetStartedScreen() {
     navigation.navigate("TestScreen");
   };
   const goBack = () => {
-    navigation.navigate("OverviewScreen");
+    navigation.navigate("DashboardScreen");
   };
 
   useEffect(() => {
-    setIsFirstTest(tests.length === 0 ? true : false);
-  }, []);
+    setIsFirstTest(() => {
+      return tests.length === 0 ? true : false;
+    });
+  }, [tests.length]);
 
   return (
     <>

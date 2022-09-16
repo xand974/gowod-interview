@@ -20,10 +20,14 @@ const PercentageText = styled.Text`
   font-size: 20px;
   font-weight: bold;
 `;
-export default function PercentageChart() {
+
+interface PercentageChartProp {
+  total: number;
+}
+export default function PercentageChart({ total }: PercentageChartProp) {
   return (
     <PercentageView>
-      <PercentageText>30%</PercentageText>
+      <PercentageText>{total?.toFixed()}%</PercentageText>
     </PercentageView>
   );
 }

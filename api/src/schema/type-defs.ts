@@ -1,44 +1,45 @@
 import { gql } from "apollo-server-express";
 
 export const typeDefs = gql`
+  scalar Date
+
   type MobiTest {
     _id: String
     deviceId: String
-    totalPoints: Int
+    totalPoints: Float
     body: BodyTest
+    createdAt: Date
   }
 
   type BodyTest {
-    ankles: Int
-    hips: Int
-    overhead: Int
-    postchain: Int
-    shoulders: Int
+    ankles: Float
+    hips: Float
+    overhead: Float
+    postchain: Float
+    shoulders: Float
   }
 
   input MobiInput {
-    _id: String
     deviceId: String
-    totalPoints: Int
+    totalPoints: Float
     body: BodyInput
   }
 
   input BodyInput {
-    ankles: Int
-    hips: Int
-    overhead: Int
-    postchain: Int
-    shoulders: Int
+    ankles: Float
+    hips: Float
+    overhead: Float
+    postchain: Float
+    shoulders: Float
   }
 
   # Queries
   type Query {
     getTestsById(deviceId: String): [MobiTest!]
-    getTests: [MobiTest!]!
   }
 
   # Mutations
   type Mutation {
-    createTest(test: MobiInput): MobiTest!
+    createTest(test: MobiInput): MobiTest
   }
 `;

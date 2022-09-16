@@ -340,3 +340,17 @@ export const MOBI_TEST = [
     ],
   },
 ];
+
+export const MAX_TEST_SCORES = {
+  global: 20,
+
+  ankles: 1,
+
+  hips: 5,
+
+  overhead: 5,
+
+  postchain: 6,
+
+  shoulders: 3,
+};

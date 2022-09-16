@@ -21,9 +21,8 @@ export default function Stacks() {
   const dispatch = useDispatch();
   const { deviceId } = useAppSelector((state) => state.app);
   const { tests } = useAppSelector((state) => state.mobiTests);
-  const navigation = useNavigation<AppNavigationProp>();
 
-  const { loading, data } = useQuery(GET_MOBI_TESTS, {
+  const { data } = useQuery(GET_MOBI_TESTS, {
     variables: { deviceId: deviceId },
   });
 
@@ -31,8 +30,6 @@ export default function Stacks() {
     if (!data?.getTestsById) return;
     dispatch(SET_TESTS([...data.getTestsById]));
   }, [data]);
-
-  console.log(tests);
 
   return (
     <Stack.Navigator

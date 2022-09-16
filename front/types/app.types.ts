@@ -8,6 +8,7 @@ export type RootStackParamList = {
   MobiScoreScreen: undefined;
   GetStartedScreen: undefined;
   TestScreen: undefined;
+  DashboardScreen: undefined;
   LoadingScreen: undefined;
 };
 

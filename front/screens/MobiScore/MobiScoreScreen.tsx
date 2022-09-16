@@ -1,14 +1,23 @@
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet } from "react-native";
 import MainLayout from "components/Layout/MainLayout";
 import SimpleButton from "components/Buttons/SimpleButton";
 import styled from "styled-components/native";
-import { LIGHT_BLUE, WHITE } from "assets/styles/@core.style";
+import { WHITE } from "assets/styles/@core.style";
 import { MID_BLUE } from "assets/styles/@core.style";
 import { useNavigation } from "@react-navigation/native";
-import { AppNavigationProp } from "types";
+import { AppNavigationProp, PercentageChartModel } from "types";
 import PercentageChart from "components/Charts/PercentageChart";
 import BarsChart from "components/Charts/BarsChart";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useAppSelector } from "../../hooks/app.hooks";
+import { MobiTestModel } from "gowod_interview_types";
+import {
+  convertDateToString,
+  getGlobalPercentageFromValue,
+  getPercentageFromTotal,
+} from "helpers/utils.helpers";
+import { MAX_TEST_SCORES } from "mock/data";
+import moment from "moment";
 
 const Container = styled.ScrollView`
   width: 85%;
@@ -66,6 +75,7 @@ const LeftJoinedText = styled.Text`
   font-weight: 200;
   color: ${WHITE};
   line-height: 20px;
+  width: 100%;
 `;
 const Divider = styled.View`
   position: absolute;
@@ -125,27 +135,75 @@ const SmallBoldText = styled.Text`
 `;
 
 export default function MobiScoreScreen() {
-  const [testCount, setTestCount] = useState([3, 2, 3, 3, 4, 49, 2]);
-  const [value, setValue] = useState([1, 3, 5, 8, 9]);
+  const { tests } = useAppSelector((state) => state.mobiTests);
+  const [value, setValue] = useState([] as PercentageChartModel[]);
   const [scrollX, setScrollX] = useState(0);
+  const [lastTest, setLastTest] = useState({} as MobiTestModel);
+  const [scrollSelectedTest, setScrollSelectedTest] = useState(
+    {} as MobiTestModel
+  );
+  const [globalPercentageValue, setGlobalPercentageValue] = useState(0);
+  const [joinedAt, setJoinedAt] = useState("");
   const navigation = useNavigation<AppNavigationProp>();
+
   const goToTest = () => {
-    navigation.navigate("MobiTestScreen");
+    navigation.navigate("GetStartedScreen");
   };
   const handleScroll = (event: any) => {
     setScrollX(event.nativeEvent.contentOffset.x);
   };
+
+  useEffect(() => {
+    if (!lastTest.totalPoints) return;
+
+    setGlobalPercentageValue(() => {
+      const globalPerc = getGlobalPercentageFromValue(lastTest?.totalPoints);
+
+      return globalPerc;
+    });
+  }, [lastTest?.totalPoints]);
+
+  useEffect(() => {
+    setJoinedAt(() => {
+      return tests[0]?.createdAt;
+    });
+  }, []);
+
+  useEffect(() => {
+    const lastElementIndex = tests.length - 1;
+    setLastTest(tests[lastElementIndex]);
+  }, [tests.length]);
+
+  useEffect(() => {
+    if (!lastTest || Object.keys(lastTest).length === 0) return;
+
+    setValue(() => {
+      const body = lastTest.body;
+
+      let bodyToArray = [];
+      const keys = ["ankles", "hips", "overhead", "postchain", "shoulders"];
+      for (const [key, val] of Object.entries(body)) {
+        if (!keys.includes(key)) continue;
+        bodyToArray.push({ name: key, percentage: val });
+      }
+      return [...bodyToArray] as PercentageChartModel[];
+    });
+  }, [lastTest, Object.keys(lastTest).length === 0]);
+
+  useEffect(() => {
+    setScrollSelectedTest(lastTest);
+  }, [lastTest.testCount]);
 
   return (
     <MainLayout>
       <Container>
         <Title>Score mobilité</Title>
         <HeaderContainer>
-          <LightText>14 septembre 2022</LightText>
+          <LightText>{convertDateToString(lastTest.createdAt)}</LightText>
           <BoldText>Global</BoldText>
         </HeaderContainer>
         <PercentageChartContainer>
-          <PercentageChart></PercentageChart>
+          <PercentageChart total={globalPercentageValue}></PercentageChart>
         </PercentageChartContainer>
         <BarChartsContainer>
           <BarsChart detailed={true} value={value}></BarsChart>
@@ -158,19 +216,20 @@ export default function MobiScoreScreen() {
           onScroll={handleScroll}
         >
           <LeftJoinedContainer>
+            <LeftJoinedText>A rejoint GOWOD le</LeftJoinedText>
             <LeftJoinedText>
-              A rejoint GOWOD {"\n"} le 12 septembre {"\n"} 2022
+              {moment(joinedAt).format("DD MMMM YYYY")}
             </LeftJoinedText>
             <Divider />
           </LeftJoinedContainer>
 
-          <RightChartContainer count={testCount.length}>
+          <RightChartContainer count={tests.length}>
             <TestSelectedContainer scrollX={scrollX}>
-              <SmallBoldText>10</SmallBoldText>
+              <SmallBoldText>{globalPercentageValue.toFixed()}</SmallBoldText>
             </TestSelectedContainer>
-            {testCount.map((item, id) => (
+            {tests.map((_, id) => (
               <TestCountContainer key={id} id={id}>
-                <TestCountText>{item}</TestCountText>
+                <TestCountText>{id + 1}</TestCountText>
               </TestCountContainer>
             ))}
           </RightChartContainer>

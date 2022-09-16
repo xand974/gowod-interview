@@ -7,6 +7,16 @@ import SimpleIcon from "components/Icons/SimpleIcon";
 import { useState, useEffect } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { AppNavigationProp } from "types";
+import { useMutation } from "@apollo/client";
+import { CREATE_TEST } from "../../Graphql/mutations";
+import { useAppSelector } from "../../hooks/app.hooks";
+import { useDispatch } from "react-redux";
+import { sleep } from "../../helpers/utils.helpers";
+import {
+  ADD_ONE_TEST,
+  RESET_CURRENT,
+  SET_TESTS,
+} from "context/slices/mobi-test.slice";
 
 const LoadingWrapper = styled.View`
   flex: 1;
@@ -27,14 +37,26 @@ const LoadingText = styled.Text`
   font-weight: 300;
 `;
 export default function LoadingScreen() {
-  const [loading, setLoading] = useState(true);
   const navigation = useNavigation<AppNavigationProp>();
+  const { current, tests } = useAppSelector((state) => state.mobiTests);
+  const [createTest, { loading }] = useMutation(CREATE_TEST);
+  const dispatch = useDispatch();
 
   useEffect(() => {
-    setTimeout(() => {
-      setLoading(false);
-      navigation.navigate("MobiScoreScreen");
-    }, 3000);
+    const createOneTest = async () => {
+      const res = await createTest({
+        variables: {
+          test: current,
+        },
+      });
+
+      const testCreated = res.data.createTest;
+      dispatch(ADD_ONE_TEST(testCreated));
+      dispatch(RESET_CURRENT());
+      await sleep(2000);
+      navigation.navigate("DashboardScreen");
+    };
+    createOneTest().catch(console.error);
   }, []);
 
   return (
