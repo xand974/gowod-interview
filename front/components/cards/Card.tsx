@@ -68,7 +68,7 @@ export default function Card() {
       }
       return [...bodyToArray] as PercentageChartModel[];
     });
-  }, [lastTest, Object.keys(lastTest).length === 0]);
+  }, [lastTest, Object.keys(lastTest ?? {}).length === 0]);
 
   return (
     <ButtonCard onPress={goToMobilityTest}>
@@ -79,7 +79,7 @@ export default function Card() {
           {/* Percentage */}
           <PercentageChart
             total={getPercentageFromTotal(
-              lastTest.totalPoints,
+              lastTest?.totalPoints,
               MAX_TEST_SCORES.global
             )}
           ></PercentageChart>

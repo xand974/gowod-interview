@@ -146,7 +146,7 @@ export default function MobiScoreScreen() {
   const [testsCountsContainerRefs, setTestsCountsContainerRefs] = useState(
     [] as RefObject<View>[]
   );
-  const [lastTest, setLastTest] = useState({} as MobiTestModel);
+  const [selectedTest, setSelectedTest] = useState({} as MobiTestModel);
   const [globalPercentageValue, setGlobalPercentageValue] = useState(0);
   const [joinedAt, setJoinedAt] = useState("");
   const navigation = useNavigation<AppNavigationProp>();
@@ -167,7 +167,7 @@ export default function MobiScoreScreen() {
     setScrollX(event.nativeEvent.contentOffset.x);
     getFocusScrollElementIndex();
     if (id === null) return;
-    setLastTest(() => {
+    setSelectedTest(() => {
       const testFound = tests[id];
       return testFound;
     });
@@ -202,6 +202,8 @@ export default function MobiScoreScreen() {
     setJoinedAt(() => {
       return tests[0]?.createdAt;
     });
+    const firstElementIndex = 0;
+    setSelectedTest(tests[firstElementIndex]);
   }, []);
 
   /**
@@ -209,32 +211,25 @@ export default function MobiScoreScreen() {
    * calculate and format the global percentage value for the selected test
    */
   useEffect(() => {
-    if (!lastTest.totalPoints) return;
+    if (!selectedTest?.totalPoints) return;
 
     setGlobalPercentageValue(() => {
-      const globalPerc = getGlobalPercentageFromValue(lastTest?.totalPoints);
+      const globalPerc = getGlobalPercentageFromValue(
+        selectedTest?.totalPoints
+      );
       return globalPerc;
     });
-  }, [lastTest?.totalPoints]);
-
-  /**
-   * @description
-   * set the last test element
-   */
-  useEffect(() => {
-    const lastElementIndex = tests.length - 1;
-    setLastTest(tests[lastElementIndex]);
-  }, [tests.length]);
+  }, [selectedTest?.totalPoints]);
 
   /**
    * @description
    * format values to display the percentage green line for each body part
    */
   useEffect(() => {
-    if (!lastTest || Object.keys(lastTest).length === 0) return;
+    if (!selectedTest || Object.keys(selectedTest).length === 0) return;
 
     setValue(() => {
-      const body = lastTest.body;
+      const body = selectedTest.body;
 
       let bodyToArray = [];
       const keys = ["ankles", "hips", "overhead", "postchain", "shoulders"];
@@ -247,7 +242,7 @@ export default function MobiScoreScreen() {
 
       return [...bodyToArray] as PercentageChartModel[];
     });
-  }, [lastTest, Object.keys(lastTest).length === 0]);
+  }, [selectedTest, Object.keys(selectedTest ?? {}).length === 0]);
 
   useEffect(() => {
     setTestsCountsContainerRefs((prev) => {
@@ -264,7 +259,7 @@ export default function MobiScoreScreen() {
       <Container>
         <Title>Score mobilité</Title>
         <HeaderContainer>
-          <LightText>{convertDateToString(lastTest.createdAt)}</LightText>
+          <LightText>{convertDateToString(selectedTest.createdAt)}</LightText>
           <BoldText>Global</BoldText>
         </HeaderContainer>
         <PercentageChartContainer>
