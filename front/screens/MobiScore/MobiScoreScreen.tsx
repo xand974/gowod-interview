@@ -1,4 +1,8 @@
-import { StyleSheet } from "react-native";
+import {
+  NativeScrollEvent,
+  NativeSyntheticEvent,
+  StyleSheet,
+} from "react-native";
 import MainLayout from "components/Layout/MainLayout";
 import SimpleButton from "components/Buttons/SimpleButton";
 import styled from "styled-components/native";
@@ -8,16 +12,17 @@ import { useNavigation } from "@react-navigation/native";
 import { AppNavigationProp, PercentageChartModel } from "types";
 import PercentageChart from "components/Charts/PercentageChart";
 import BarsChart from "components/Charts/BarsChart";
-import { useState, useEffect } from "react";
-import { useAppSelector } from "../../hooks/app.hooks";
+import { useState, useEffect, RefObject } from "react";
+import { useAppSelector } from "hooks/app.hooks";
 import { MobiTestModel } from "gowod_interview_types";
 import {
   convertDateToString,
   getGlobalPercentageFromValue,
-  getPercentageFromTotal,
 } from "helpers/utils.helpers";
-import { MAX_TEST_SCORES } from "mock/data";
 import moment from "moment";
+import { useRef } from "react";
+import { View } from "react-native";
+import React from "react";
 
 const Container = styled.ScrollView`
   width: 85%;
@@ -138,42 +143,93 @@ export default function MobiScoreScreen() {
   const { tests } = useAppSelector((state) => state.mobiTests);
   const [value, setValue] = useState([] as PercentageChartModel[]);
   const [scrollX, setScrollX] = useState(0);
-  const [lastTest, setLastTest] = useState({} as MobiTestModel);
-  const [scrollSelectedTest, setScrollSelectedTest] = useState(
-    {} as MobiTestModel
+  const [testsCountsContainerRefs, setTestsCountsContainerRefs] = useState(
+    [] as RefObject<View>[]
   );
+  const [lastTest, setLastTest] = useState({} as MobiTestModel);
   const [globalPercentageValue, setGlobalPercentageValue] = useState(0);
   const [joinedAt, setJoinedAt] = useState("");
   const navigation = useNavigation<AppNavigationProp>();
+  const [id, setId] = useState(0);
 
-  const goToTest = () => {
+  /**
+   * @name goToTest
+   * @description
+   * navigates to the GetStartedScreen
+   */
+  const goToTest = (): void => {
     navigation.navigate("GetStartedScreen");
   };
-  const handleScroll = (event: any) => {
+
+  const handleScroll = (
+    event: NativeSyntheticEvent<NativeScrollEvent>
+  ): void => {
     setScrollX(event.nativeEvent.contentOffset.x);
+    getFocusScrollElementIndex();
+    if (id === null) return;
+    setLastTest(() => {
+      const testFound = tests[id];
+      return testFound;
+    });
   };
 
-  useEffect(() => {
-    if (!lastTest.totalPoints) return;
+  const getFocusScrollElementIndex = (): void => {
+    for (let i = 0; i < testsCountsContainerRefs.length; i++) {
+      const item = testsCountsContainerRefs[i];
+      const element = item.current;
+      if (!element) continue;
+      let widthLeft = 0,
+        widthRight = 0;
 
-    setGlobalPercentageValue(() => {
-      const globalPerc = getGlobalPercentageFromValue(lastTest?.totalPoints);
+      element.measure((x, _, w) => {
+        widthLeft = x - w / 2;
+        widthRight = x + w / 2;
+        if (widthLeft <= scrollX && widthRight >= scrollX) {
+          setId(() => i);
+        }
+      });
+    }
+  };
 
-      return globalPerc;
-    });
-  }, [lastTest?.totalPoints]);
-
+  /**
+   * @description
+   * set initial state
+   * set joinedAt value
+   * - get the first test from the tests array which correspond to the first test that was created
+   * - display the createdAt value related
+   */
   useEffect(() => {
     setJoinedAt(() => {
       return tests[0]?.createdAt;
     });
   }, []);
 
+  /**
+   * @description
+   * calculate and format the global percentage value for the selected test
+   */
+  useEffect(() => {
+    if (!lastTest.totalPoints) return;
+
+    setGlobalPercentageValue(() => {
+      const globalPerc = getGlobalPercentageFromValue(lastTest?.totalPoints);
+      return globalPerc;
+    });
+  }, [lastTest?.totalPoints]);
+
+  /**
+   * @description
+   * set the last test element
+   */
   useEffect(() => {
     const lastElementIndex = tests.length - 1;
     setLastTest(tests[lastElementIndex]);
   }, [tests.length]);
 
+  /**
+   * @description
+   * format values to display the percentage green line for each body part
+   */
   useEffect(() => {
     if (!lastTest || Object.keys(lastTest).length === 0) return;
 
@@ -182,17 +238,26 @@ export default function MobiScoreScreen() {
 
       let bodyToArray = [];
       const keys = ["ankles", "hips", "overhead", "postchain", "shoulders"];
+
+      // map the key and the value from the body object to store in the array
       for (const [key, val] of Object.entries(body)) {
         if (!keys.includes(key)) continue;
         bodyToArray.push({ name: key, percentage: val });
       }
+
       return [...bodyToArray] as PercentageChartModel[];
     });
   }, [lastTest, Object.keys(lastTest).length === 0]);
 
   useEffect(() => {
-    setScrollSelectedTest(lastTest);
-  }, [lastTest.testCount]);
+    setTestsCountsContainerRefs((prev) => {
+      prev = [];
+      for (let i = 0; i < tests.length; i++) {
+        prev.push(React.createRef());
+      }
+      return prev;
+    });
+  }, [tests.length]);
 
   return (
     <MainLayout>
@@ -225,10 +290,14 @@ export default function MobiScoreScreen() {
 
           <RightChartContainer count={tests.length}>
             <TestSelectedContainer scrollX={scrollX}>
-              <SmallBoldText>{globalPercentageValue.toFixed()}</SmallBoldText>
+              <SmallBoldText>{globalPercentageValue?.toFixed()}</SmallBoldText>
             </TestSelectedContainer>
             {tests.map((_, id) => (
-              <TestCountContainer key={id} id={id}>
+              <TestCountContainer
+                key={id}
+                id={id}
+                ref={testsCountsContainerRefs[id]}
+              >
                 <TestCountText>{id + 1}</TestCountText>
               </TestCountContainer>
             ))}

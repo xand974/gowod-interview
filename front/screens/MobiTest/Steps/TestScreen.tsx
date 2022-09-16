@@ -69,13 +69,18 @@ export default function TestScreen() {
   const { deviceId } = useAppSelector((state) => state.app);
   const dispatch = useDispatch();
 
-  useLayoutEffect(() => {
+  useLayoutEffect((): void => {
     navigation.setOptions({
       header: () => <Header canGoBack={true} goBack={goBack} />,
     });
   }, []);
 
-  const goBack = () => {
+  /**
+   * @description
+   * when go back
+   * reset the previous state
+   */
+  const goBack = (): void => {
     // TODO move these to context
     setCurrentStepNumber((prev) => {
       if (prev === 0) {
@@ -101,13 +106,25 @@ export default function TestScreen() {
     });
   };
 
-  const goNextStep = (data: { points: number; archetype: string }) => {
+  /**
+   * @name goNextStep
+   * @description
+   * - increments the total by the points related to the card selected
+   * - add the selected answer to the state
+   * - increments the step number
+   * @param data {points: number; archetype: string }
+   */
+  const goNextStep = (data: { points: number; archetype: string }): void => {
     // TODO move these to context
     setAnswer((prev) => [...prev, { ...data }]);
     setTotal((prev) => prev + data.points);
     setCurrentStepNumber((prev) => prev + 1);
   };
 
+  /**
+   * @description
+   * it will trigger when the user select all the answers
+   */
   useEffect(() => {
     if (currentStepNumber === questions.length) {
       const mobiTest = {

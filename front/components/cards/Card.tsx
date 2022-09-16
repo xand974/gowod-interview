@@ -51,8 +51,6 @@ export default function Card() {
 
   useEffect(() => {
     const lastElementIndex = tests.length - 1;
-    console.log(tests);
-
     setLastTest(tests[lastElementIndex]);
   }, [tests.length]);
 

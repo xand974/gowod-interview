@@ -12,11 +12,7 @@ import { CREATE_TEST } from "../../Graphql/mutations";
 import { useAppSelector } from "../../hooks/app.hooks";
 import { useDispatch } from "react-redux";
 import { sleep } from "../../helpers/utils.helpers";
-import {
-  ADD_ONE_TEST,
-  RESET_CURRENT,
-  SET_TESTS,
-} from "context/slices/mobi-test.slice";
+import { ADD_ONE_TEST, RESET_CURRENT } from "context/slices/mobi-test.slice";
 
 const LoadingWrapper = styled.View`
   flex: 1;
@@ -38,25 +34,33 @@ const LoadingText = styled.Text`
 `;
 export default function LoadingScreen() {
   const navigation = useNavigation<AppNavigationProp>();
-  const { current, tests } = useAppSelector((state) => state.mobiTests);
-  const [createTest, { loading }] = useMutation(CREATE_TEST);
+  const { current } = useAppSelector((state) => state.mobiTests);
+  const [loading, setLoading] = useState(false);
+  const [createTest] = useMutation(CREATE_TEST);
   const dispatch = useDispatch();
 
   useEffect(() => {
+    let isSubscribed = false;
     const createOneTest = async () => {
+      setLoading(true);
       const res = await createTest({
         variables: {
           test: current,
         },
       });
 
+      if (isSubscribed) return;
       const testCreated = res.data.createTest;
       dispatch(ADD_ONE_TEST(testCreated));
       dispatch(RESET_CURRENT());
       await sleep(2000);
+      setLoading(false);
       navigation.navigate("DashboardScreen");
     };
     createOneTest().catch(console.error);
+    return () => {
+      isSubscribed = true;
+    };
   }, []);
 
   return (
