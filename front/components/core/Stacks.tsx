@@ -1,5 +1,5 @@
-import React, { useEffect } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { useEffect } from "react";
+import { StyleSheet } from "react-native";
 import {
   createStackNavigator,
   TransitionPresets,
@@ -9,12 +9,10 @@ import MobiTestScreen from "screens/MobiTest/MobiTestScreen";
 import MobiScoreScreen from "screens/MobiScore/MobiScoreScreen";
 import LoadingScreen from "screens/Loading/LoadingScreen";
 import { useDispatch } from "react-redux";
-import { GET_ALL_TESTS, GET_MOBI_TESTS } from "Graphql/queries";
+import { GET_MOBI_TESTS } from "Graphql/queries";
 import { SET_TESTS } from "context/slices/mobi-test.slice";
 import { useQuery } from "@apollo/client";
 import { useAppSelector } from "../../hooks/app.hooks";
-import { useNavigation } from "@react-navigation/native";
-import { AppNavigationProp } from "../../types/app.types";
 
 export default function Stacks() {
   const Stack = createStackNavigator();

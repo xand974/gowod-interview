@@ -11,7 +11,10 @@ import BarsChart from "../Charts/BarsChart";
 import { PercentageChartModel } from "types";
 import { MobiTestModel } from "gowod_interview_types";
 import { useAppSelector } from "hooks/app.hooks";
-import { getPercentageFromTotal } from "helpers/utils.helpers";
+import {
+  getGlobalPercentageFromValue,
+  getPercentageFromTotal,
+} from "helpers/utils.helpers";
 import { MAX_TEST_SCORES } from "mock/data";
 
 const ButtonCard = styled.TouchableOpacity`
@@ -42,6 +45,7 @@ const ShrinkCardContent = styled.View`
 export default function Card() {
   const { tests } = useAppSelector((state) => state.mobiTests);
   const [lastTest, setLastTest] = useState({} as MobiTestModel);
+  const [globalPercentageValue, setGlobalPercentageValue] = useState(0);
   const [value, setValue] = useState([] as PercentageChartModel[]);
   const navigation = useNavigation<AppNavigationProp>();
 
@@ -52,6 +56,17 @@ export default function Card() {
   useEffect(() => {
     const lastElementIndex = tests.length - 1;
     setLastTest(tests[lastElementIndex]);
+  }, [tests.length]);
+
+  useEffect(() => {
+    const lastElementIndex = tests.length - 1;
+    const lastTest = tests[lastElementIndex];
+    if (!lastTest?.totalPoints) return;
+
+    setGlobalPercentageValue(() => {
+      const globalPerc = getGlobalPercentageFromValue(lastTest?.totalPoints);
+      return globalPerc;
+    });
   }, [tests.length]);
 
   useEffect(() => {
@@ -77,12 +92,7 @@ export default function Card() {
       <CardWrapper>
         <ShrinkCardContent>
           {/* Percentage */}
-          <PercentageChart
-            total={getPercentageFromTotal(
-              lastTest?.totalPoints,
-              MAX_TEST_SCORES.global
-            )}
-          ></PercentageChart>
+          <PercentageChart total={globalPercentageValue}></PercentageChart>
           {/*  Charts */}
           <BarsChart value={value}></BarsChart>
         </ShrinkCardContent>
