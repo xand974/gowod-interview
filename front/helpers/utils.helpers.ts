@@ -18,6 +18,7 @@ export const getGlobalPercentageFromValue = (value: number) => {
   return (value / MAX_TEST_SCORES.global) * 100;
 };
 
+// * this should return a number
 export const getPercentageByName = (
   percentage: number,
   name: "ankles" | "hips" | "overhead" | "postchain" | "shoulders"

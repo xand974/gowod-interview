@@ -1,7 +1,7 @@
 import renderer from "react-test-renderer";
 import SimpleIcon from "../../components/Icons/SimpleIcon";
 
-test("render MainLayout component", () => {
+test("render SimpleIcon component", () => {
   const component = renderer.create(
     <SimpleIcon
       type="ionicon"
