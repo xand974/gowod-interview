@@ -5,6 +5,12 @@ export const resolvers = {
   Query: {
     async getTestsById(_: any, { deviceId }: { deviceId: string }) {
       try {
+        if (!deviceId)
+          return {
+            code: 400,
+            success: false,
+            message: "no deviceId provided",
+          };
         const testFound = await mobiTestSchema
           .find({ deviceId: deviceId })
           .sort({ createdAt: 1 });
