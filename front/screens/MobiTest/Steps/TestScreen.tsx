@@ -82,9 +82,7 @@ export default function TestScreen() {
    * reset the previous state
    */
   const goBack = (): void => {
-    console.log(tests);
-
-    if (tests.length === 0) return;
+    if (tests.length === 0 && answer.length === 0) return;
     // TODO move these to context
     setCurrentStepNumber((prev) => {
       if (prev === 0) {
