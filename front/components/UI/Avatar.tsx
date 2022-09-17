@@ -40,7 +40,10 @@ const TextInfoDescription = styled.Text`
 `;
 
 interface AvatarProp {
-  data: any | undefined;
+  data: {
+    name: string;
+    description: string;
+  };
 }
 export default function Avatar({ data }: AvatarProp) {
   return (
@@ -49,8 +52,8 @@ export default function Avatar({ data }: AvatarProp) {
         <RoundedImage source={{ uri: DEFAULT_IMG }}></RoundedImage>
       </RoundedImageContainer>
       <TextInfosContainer>
-        <TextInfoTitle>{data?.name}</TextInfoTitle>
-        <TextInfoDescription>{data?.archetype}</TextInfoDescription>
+        <TextInfoTitle>{data.name}</TextInfoTitle>
+        <TextInfoDescription>{data.description}</TextInfoDescription>
       </TextInfosContainer>
     </TopInfosContainer>
   );

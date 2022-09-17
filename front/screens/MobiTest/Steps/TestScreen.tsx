@@ -173,7 +173,7 @@ export default function TestScreen() {
         ></ProgressBar>
 
         {/* Top Infos Container */}
-        <Avatar data={currentQuestion}></Avatar>
+        <Avatar data={currentQuestion as any}></Avatar>
 
         {/* SIDES */}
         <WhichSideContainer side={"right"}>
