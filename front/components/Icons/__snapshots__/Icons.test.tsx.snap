@@ -1,0 +1,25 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`render MainLayout component 1`] = `
+<View
+  style={
+    Object {
+      "overflow": "hidden",
+    }
+  }
+>
+  <View>
+    <View
+      style={
+        Object {
+          "alignItems": "center",
+          "backgroundColor": "transparent",
+          "justifyContent": "center",
+        }
+      }
+    >
+      <Text />
+    </View>
+  </View>
+</View>
+`;
