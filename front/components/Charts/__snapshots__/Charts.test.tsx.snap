@@ -1,0 +1,127 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`render bars chart 1`] = `
+<View
+  detailed={false}
+  style={
+    Array [
+      Object {
+        "alignItems": "flex-end",
+        "flexDirection": "row",
+        "height": 60,
+        "justifyContent": "center",
+        "marginTop": 30,
+        "width": "100%",
+      },
+    ]
+  }
+>
+  <View
+    style={
+      Array [
+        Object {
+          "alignItems": "center",
+          "justifyContent": "center",
+        },
+      ]
+    }
+  >
+    <View
+      detailed={false}
+      id={0}
+      item={
+        Object {
+          "name": "ankles",
+          "percentage": 10,
+        }
+      }
+      style={
+        Array [
+          Object {
+            "backgroundColor": "#98ffcf",
+            "height": "1000%",
+            "left": 10,
+            "marginRight": 10,
+            "position": "relative",
+            "width": 3,
+          },
+        ]
+      }
+    />
+  </View>
+  <View
+    style={
+      Array [
+        Object {
+          "alignItems": "center",
+          "justifyContent": "center",
+        },
+      ]
+    }
+  >
+    <View
+      detailed={false}
+      id={1}
+      item={
+        Object {
+          "name": "shoulders",
+          "percentage": 20,
+        }
+      }
+      style={
+        Array [
+          Object {
+            "backgroundColor": "#98ffcf",
+            "height": "667%",
+            "left": 10,
+            "marginRight": 11,
+            "position": "relative",
+            "width": 3,
+          },
+        ]
+      }
+    />
+  </View>
+</View>
+`;
+
+exports[`render percentage chart 1`] = `
+<View
+  style={
+    Array [
+      Object {
+        "alignItems": "center",
+        "borderColor": "#fff",
+        "borderRadius": 100,
+        "borderWidth": 4,
+        "height": 100,
+        "justifyContent": "center",
+        "marginBottom": 10,
+        "marginLeft": 0,
+        "marginRight": 0,
+        "marginTop": 10,
+        "paddingBottom": 10,
+        "paddingLeft": 10,
+        "paddingRight": 10,
+        "paddingTop": 10,
+        "width": 100,
+      },
+    ]
+  }
+>
+  <Text
+    style={
+      Array [
+        Object {
+          "color": "#fff",
+          "fontSize": 20,
+          "fontWeight": "bold",
+        },
+      ]
+    }
+  >
+    10
+    %
+  </Text>
+</View>
+`;

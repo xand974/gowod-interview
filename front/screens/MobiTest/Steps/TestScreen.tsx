@@ -1,7 +1,7 @@
 import { StyleSheet, Text } from "react-native";
 import MainLayout from "components/Layout/MainLayout";
 import { useNavigation } from "@react-navigation/native";
-import { useLayoutEffect, useMemo, useState, useEffect } from "react";
+import { useLayoutEffect, useMemo, useState, useEffect, useRef } from "react";
 import Header from "components/core/Header";
 import styled from "styled-components/native";
 import { WHITE } from "assets/styles/@core.style";
@@ -13,7 +13,7 @@ import { MobiTestModel } from "gowod_interview_types";
 import { AppNavigationProp } from "types";
 import { useDispatch } from "react-redux";
 import { SET_CURRENT_TEST } from "context/slices/mobi-test.slice";
-import { useAppSelector } from "../../../hooks/app.hooks";
+import { useAppSelector } from "hooks/app.hooks";
 
 const Container = styled.View`
   width: 90%;
@@ -68,6 +68,7 @@ export default function TestScreen() {
   const navigation = useNavigation<AppNavigationProp>();
   const { deviceId } = useAppSelector((state) => state.app);
   const { tests } = useAppSelector((state) => state.mobiTests);
+  const canGoBack = useRef(false);
   const dispatch = useDispatch();
 
   useLayoutEffect((): void => {
@@ -76,15 +77,17 @@ export default function TestScreen() {
     });
   }, []);
 
+  useEffect(() => {
+    canGoBack.current = tests.length > 0 || answer.length > 0;
+  }, [tests.length, answer.length]);
+
   /**
    * @description
    * when go back
    * reset the previous state
    */
   const goBack = (): void => {
-    console.log(tests);
-
-    if (tests.length === 0) return;
+    if (!canGoBack.current) return;
     // TODO move these to context
     setCurrentStepNumber((prev) => {
       if (prev === 0) {
@@ -95,7 +98,7 @@ export default function TestScreen() {
       return prev - 1;
     });
 
-    // TODO refactor this
+    // TODO refactor this nested setState
     setAnswer((prev) => {
       const answerWithoutLastElementRemoved = prev.filter(
         (_, id) => id !== prev.length - 1
@@ -175,7 +178,7 @@ export default function TestScreen() {
         ></ProgressBar>
 
         {/* Top Infos Container */}
-        <Avatar data={currentQuestion}></Avatar>
+        <Avatar data={currentQuestion as any}></Avatar>
 
         {/* SIDES */}
         <WhichSideContainer side={"right"}>
