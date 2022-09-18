@@ -39,8 +39,8 @@ Fullstack application made in TypeScript.
 ```
 
 ### Problèmes
-Pour des raisons, l'adresse ip de vers l'api change en fonction des lancements avec expo. Cela est surement dû au tunnel qui est crée à chaqueexpo start
-- Changer l'adresse ip avec la nouvelle adresse quand on lance expo start
+Pour des raisons, l'adresse ip de vers l'api change en fonction des lancements avec expo. Cela est surement dû au tunnel qui est crée à chaque expo start
+- Changer l'adresse ip dans <App /> avec la nouvelle adresse quand on lance expo start
 <img width="478" alt="image" src="https://user-images.githubusercontent.com/75538669/190898368-669186f1-9faf-4576-bc19-a707ebd13b5a.png">
 <img width="448" alt="image" src="https://user-images.githubusercontent.com/75538669/190898419-9efabc86-d4fa-4be0-9698-7f466cf838f7.png">
 
